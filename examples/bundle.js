@@ -994,11 +994,13 @@ function hasOwnProperty(obj, prop) {
 // override console log
 var oldLogger = window.console.log;
 console.log = function(msg) {
+  var nativeMessage = [].slice.call(arguments).join(' ');
+
   try {
-    NativeLog(msg);
+    NativeLog(nativeMessage);
   }
   catch (e) {
-    alert('cannot native log :(', e);
+    alert(nativeMessage);
   }
 
   oldLogger.apply(console, arguments);
