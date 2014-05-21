@@ -1033,7 +1033,8 @@ localMedia.render(document.body);
 
 **/
 exports.supported = function(platform) {
-  return ['safari'].indexOf(platform.browser.toLowerCase()) >= 0;
+  return true;
+//   return ['safari'].indexOf(platform.browser.toLowerCase()) >= 0;
 };
 
 /**
@@ -1218,6 +1219,10 @@ window.MediaStream = detect('MediaStream');
 
 **/
 function Media(opts) {
+  var media = this;
+  var plugin;
+
+  // check the constructor has been called
   if (! (this instanceof Media)) {
     return new Media(opts);
   }
@@ -1226,7 +1231,7 @@ function Media(opts) {
   EventEmitter.call(this);
 
   // if the opts is a media stream instance, then handle that appropriately
-  if (opts && opts instanceof MediaStream) {
+  if (opts && MediaStream && opts instanceof MediaStream) {
     opts = {
       stream: opts,
       capture: false,
@@ -1277,8 +1282,26 @@ function Media(opts) {
   // TODO: revisit whether this is the best way to manage this
   this._bindings = [];
 
+  // see if we are using a plugin
+  plugin = this.plugin = ((opts || {}).plugins || []).filter(function(plugin) {
+    return plugin.supported(detect);
+  })[0];
+
+  if (plugin && typeof plugin.init == 'function') {
+    // if we are using a plugin, give it an opportunity to patch the
+    // media capture interface
+    media._pinst = plugin.init(function(err) {
+      if (err) {
+        return media.emit('error', err);
+      }
+
+      if (opts.capture) {
+        media.capture();
+      }
+    });
+  }
   // if we are autostarting, capture media on the next tick
-  if (opts.capture) {
+  else if (opts.capture) {
     setTimeout(this.capture.bind(this), 0);
   }
 }
@@ -1316,12 +1339,18 @@ Media.prototype.capture = function(constraints, callback) {
     this.once('capture', callback.bind(this));
   }
 
+  // if we don't have get the ability to capture user media, then abort
+  if (typeof navigator.getUserMedia != 'function') {
+    return callback && callback(new Error('Unable to capture user media'));
+  }
+
   // get user media, using either the provided constraints or the
   // default constraints
   debug('getUserMedia, constraints: ', constraints || this.constraints);
   navigator.getUserMedia(
     constraints || this.constraints,
     function(stream) {
+      debug('sucessfully captured media stream: ', stream);
       if (typeof stream.addEventListener == 'function') {
         stream.addEventListener('ended', handleEnd);
       }
@@ -1450,6 +1479,15 @@ Media.prototype.stop = function(opts) {
 
 **/
 
+Media.prototype._createBinding = function(opts, element) {
+  this._bindings.push({
+    el: element,
+    opts: opts
+  });
+
+  return element;
+};
+
 /**
   ### _prepareElement(opts, element)
 
@@ -1466,6 +1504,14 @@ Media.prototype._prepareElement = function(opts, element) {
 
   if (! element) {
     throw new Error('Cannot render media to a null element');
+  }
+
+  // if the plugin wants to prepare elemnets, then let it
+  if (this.plugin && typeof this.plugin.prepareElement == 'function') {
+    return this._createBinding(
+      opts,
+      this.plugin.prepareElement.call(this._pinst, opts, element)
+    );
   }
 
   // perform some additional checks for things that "look" like a
@@ -1500,13 +1546,7 @@ Media.prototype._prepareElement = function(opts, element) {
     element.setAttribute('muted', '');
   }
 
-  // flag the element as bound
-  this._bindings.push({
-    el: element,
-    opts: opts
-  });
-
-  return element;
+  return this._createBinding(opts, element);
 };
 
 /**
@@ -1544,6 +1584,11 @@ Media.prototype._bindStream = function(stream) {
     el.removeEventListener('canplay', canPlay);
     el.removeEventListener('loadedmetadata', canPlay);
     checkWaiting();
+  }
+
+  // if we have a plugin that knows how to attach a stream, then let it do it
+  if (this.plugin && typeof this.plugin.attachStream == 'function') {
+    return this.plugin.attachStream.call(this._pinst, stream, this._bindings);
   }
 
   // iterate through the bindings and bind the stream
