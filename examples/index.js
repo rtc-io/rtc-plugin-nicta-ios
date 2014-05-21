@@ -1,11 +1,11 @@
 // override console log
 var oldLogger = window.console.log;
-console.log = function() {
+console.log = function(msg) {
   try {
-    NativeLog.apply(null, arguments);
+    NativeLog(msg);
   }
   catch (e) {
-    alert('cannot native log :(');
+    alert('cannot native log :(', e);
   }
 
   oldLogger.apply(console, arguments);

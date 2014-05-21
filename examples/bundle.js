@@ -993,12 +993,12 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":4,"ddOWjS":3,"inherits":2}],6:[function(require,module,exports){
 // override console log
 var oldLogger = window.console.log;
-console.log = function() {
+console.log = function(msg) {
   try {
-    NativeLog.apply(null, arguments);
+    NativeLog(msg);
   }
   catch (e) {
-    alert('cannot native log :(');
+    alert('cannot native log :(', e);
   }
 
   oldLogger.apply(console, arguments);
