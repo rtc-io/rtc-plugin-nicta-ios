@@ -991,6 +991,19 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this,require("ddOWjS"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./support/isBuffer":4,"ddOWjS":3,"inherits":2}],6:[function(require,module,exports){
+// override console log
+var oldLogger = window.console.log;
+console.log = function() {
+  if (typeof NativeLog == 'function') {
+    NativeLog.apply(null, arguments);
+  }
+
+  oldLogger.apply(console, arguments);
+};
+
+// enable logging
+require('cog/logger').enable('*');
+
 var media = require('rtc-media');
 var localMedia = media({
   plugins: [
@@ -998,9 +1011,12 @@ var localMedia = media({
   ]
 });
 
+console.log('navigator.getUserMedia = ', typeof navigator.getUserMedia);
+console.log('getUserMedia = ', typeof getUserMedia);
+
 localMedia.render(document.body);
 
-},{"../":7,"rtc-media":8}],7:[function(require,module,exports){
+},{"../":7,"cog/logger":8,"rtc-media":9}],7:[function(require,module,exports){
 /* jshint node: true */
 'use strict';
 
@@ -1107,6 +1123,141 @@ exports.prepareElement = function(opts, element) {
 };
 
 },{}],8:[function(require,module,exports){
+/* jshint node: true */
+'use strict';
+
+/**
+  ## cog/logger
+
+  ```js
+  var logger = require('cog/logger');
+  ```
+
+  Simple browser logging offering similar functionality to the
+  [debug](https://github.com/visionmedia/debug) module.
+
+  ### Usage
+
+  Create your self a new logging instance and give it a name:
+
+  ```js
+  var debug = logger('phil');
+  ```
+
+  Now do some debugging:
+
+  ```js
+  debug('hello');
+  ```
+
+  At this stage, no log output will be generated because your logger is
+  currently disabled.  Enable it:
+
+  ```js
+  logger.enable('phil');
+  ```
+
+  Now do some more logger:
+
+  ```js
+  debug('Oh this is so much nicer :)');
+  // --> phil: Oh this is some much nicer :)
+  ```
+
+  ### Reference
+**/
+
+var active = [];
+var unleashListeners = [];
+var targets = [ console ];
+
+/**
+  #### logger(name)
+
+  Create a new logging instance.
+**/
+var logger = module.exports = function(name) {
+  // initial enabled check
+  var enabled = checkActive();
+
+  function checkActive() {
+    return enabled = active.indexOf('*') >= 0 || active.indexOf(name) >= 0;
+  }
+
+  // register the check active with the listeners array
+  unleashListeners[unleashListeners.length] = checkActive;
+
+  // return the actual logging function
+  return function() {
+    var args = [].slice.call(arguments);
+
+    // if we have a string message
+    if (typeof args[0] == 'string' || (args[0] instanceof String)) {
+      args[0] = name + ': ' + args[0];
+    }
+
+    // if not enabled, bail
+    if (! enabled) {
+      return;
+    }
+
+    // log
+    targets.forEach(function(target) {
+      target.log.apply(target, args);
+    });
+  };
+};
+
+/**
+  #### logger.reset()
+
+  Reset logging (remove the default console logger, flag all loggers as
+  inactive, etc, etc.
+**/
+logger.reset = function() {
+  // reset targets and active states
+  targets = [];
+  active = [];
+
+  return logger.enable();
+};
+
+/**
+  #### logger.to(target)
+
+  Add a logging target.  The logger must have a `log` method attached.
+
+**/
+logger.to = function(target) {
+  targets = targets.concat(target || []);
+
+  return logger;
+};
+
+/**
+  #### logger.enable(names*)
+
+  Enable logging via the named logging instances.  To enable logging via all
+  instances, you can pass a wildcard:
+
+  ```js
+  logger.enable('*');
+  ```
+
+  __TODO:__ wildcard enablers
+**/
+logger.enable = function() {
+  // update the active
+  active = active.concat([].slice.call(arguments));
+
+  // trigger the unleash listeners
+  unleashListeners.forEach(function(listener) {
+    listener();
+  });
+
+  return logger;
+};
+},{}],9:[function(require,module,exports){
 /* jshint node: true */
 /* global navigator: false */
 /* global window: false */
@@ -1704,7 +1855,7 @@ Media.prototype._handleSuccess = function(stream) {
   this.emit('stream', stream);
 };
 
-},{"cog/extend":9,"cog/logger":10,"events":1,"rtc-core/detect":11,"util":5}],9:[function(require,module,exports){
+},{"cog/extend":10,"cog/logger":11,"events":1,"rtc-core/detect":12,"util":5}],10:[function(require,module,exports){
 /* jshint node: true */
 'use strict';
 
@@ -1739,142 +1890,9 @@ module.exports = function(target) {
 
   return target;
 };
-},{}],10:[function(require,module,exports){
-/* jshint node: true */
-'use strict';
-
-/**
-  ## cog/logger
-
-  ```js
-  var logger = require('cog/logger');
-  ```
-
-  Simple browser logging offering similar functionality to the
-  [debug](https://github.com/visionmedia/debug) module.
-
-  ### Usage
-
-  Create your self a new logging instance and give it a name:
-
-  ```js
-  var debug = logger('phil');
-  ```
-
-  Now do some debugging:
-
-  ```js
-  debug('hello');
-  ```
-
-  At this stage, no log output will be generated because your logger is
-  currently disabled.  Enable it:
-
-  ```js
-  logger.enable('phil');
-  ```
-
-  Now do some more logger:
-
-  ```js
-  debug('Oh this is so much nicer :)');
-  // --> phil: Oh this is some much nicer :)
-  ```
-
-  ### Reference
-**/
-
-var active = [];
-var unleashListeners = [];
-var targets = [ console ];
-
-/**
-  #### logger(name)
-
-  Create a new logging instance.
-**/
-var logger = module.exports = function(name) {
-  // initial enabled check
-  var enabled = checkActive();
-
-  function checkActive() {
-    return enabled = active.indexOf('*') >= 0 || active.indexOf(name) >= 0;
-  }
-
-  // register the check active with the listeners array
-  unleashListeners[unleashListeners.length] = checkActive;
-
-  // return the actual logging function
-  return function() {
-    var args = [].slice.call(arguments);
-
-    // if we have a string message
-    if (typeof args[0] == 'string' || (args[0] instanceof String)) {
-      args[0] = name + ': ' + args[0];
-    }
-
-    // if not enabled, bail
-    if (! enabled) {
-      return;
-    }
-
-    // log
-    targets.forEach(function(target) {
-      target.log.apply(target, args);
-    });
-  };
-};
-
-/**
-  #### logger.reset()
-
-  Reset logging (remove the default console logger, flag all loggers as
-  inactive, etc, etc.
-**/
-logger.reset = function() {
-  // reset targets and active states
-  targets = [];
-  active = [];
-
-  return logger.enable();
-};
-
-/**
-  #### logger.to(target)
-
-  Add a logging target.  The logger must have a `log` method attached.
-
-**/
-logger.to = function(target) {
-  targets = targets.concat(target || []);
-
-  return logger;
-};
-
-/**
-  #### logger.enable(names*)
-
-  Enable logging via the named logging instances.  To enable logging via all
-  instances, you can pass a wildcard:
-
-  ```js
-  logger.enable('*');
-  ```
-
-  __TODO:__ wildcard enablers
-**/
-logger.enable = function() {
-  // update the active
-  active = active.concat([].slice.call(arguments));
-
-  // trigger the unleash listeners
-  unleashListeners.forEach(function(listener) {
-    listener();
-  });
-
-  return logger;
-};
 },{}],11:[function(require,module,exports){
+module.exports=require(8)
+},{}],12:[function(require,module,exports){
 (function (process){
 /* jshint node: true */
 /* global window: false */
@@ -1995,7 +2013,7 @@ function parseVersion(version) {
 }
 
 }).call(this,require("ddOWjS"))
-},{"ddOWjS":3,"semver":12}],12:[function(require,module,exports){
+},{"ddOWjS":3,"semver":13}],13:[function(require,module,exports){
 ;(function(exports) {
 
 // export the class if we are in a Node-like system.

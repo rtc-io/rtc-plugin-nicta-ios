@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/rtc-io/rtc-plugin-nicta-ios",
   "devDependencies": {
+    "cog": "^0.5.3",
     "rtc-media": "^1"
   }
 }
