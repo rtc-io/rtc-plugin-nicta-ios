@@ -1076,12 +1076,12 @@ exports.prepareElement = function(opts, element) {
   var container = shouldReplace ? element.parentNode : element;
 
   // add an attach method for the renderer
-  renderer.attach = function() {
+  canvas.attach = function() {
     // inject the renderer into the dom
     container.appendChild(canvas);
   };
 
-  return renderer;
+  return canvas;
 };
 
 },{}],8:[function(require,module,exports){

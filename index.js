@@ -30,7 +30,8 @@
 
 **/
 exports.supported = function(platform) {
-  return ['safari'].indexOf(platform.browser.toLowerCase()) >= 0;
+  return true;
+//   return ['safari'].indexOf(platform.browser.toLowerCase()) >= 0;
 };
 
 /**
@@ -49,7 +50,26 @@ var init = exports.init = function(callback) {
 
 **/
 exports.attachStream = function(stream, bindings) {
-  console.log('attaching stream');
+  var contexts = [];
+  var buffers = [];
+
+  function drawVideo(imageData, width, height) {
+    var img = new Image();
+
+    img.src = imageData;
+    img.onload = function() {
+      contexts.forEach(function(context) {
+        context.drawImage(img, 0, 0, width, height);
+      });
+    };
+  }
+
+  // get the contexts for each of the bindings
+  contexts = bindings.map(function(binding) {
+    return binding.el.getContext('2d');
+  });
+
+  stream.ondrawvideo = drawVideo;
 };
 
 /**
@@ -71,11 +91,14 @@ exports.prepareElement = function(opts, element) {
   // if we should replace the element, then find the parent
   var container = shouldReplace ? element.parentNode : element;
 
-  // add an attach method for the renderer
-  renderer.attach = function() {
-    // inject the renderer into the dom
+  // if we should replace the target element, then do that now
+  if (shouldReplace) {
+    container.insertBefore(element, canvas);
+    container.removeChild(element);
+  }
+  else {
     container.appendChild(canvas);
-  };
+  }
 
-  return renderer;
+  return canvas;
 };
