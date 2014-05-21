@@ -994,8 +994,11 @@ function hasOwnProperty(obj, prop) {
 // override console log
 var oldLogger = window.console.log;
 console.log = function() {
-  if (typeof NativeLog == 'function') {
+  if (typeof NativeLog != 'undefined') {
     NativeLog.apply(null, arguments);
+  }
+  else {
+    alert('cannot native log :(');
   }
 
   oldLogger.apply(console, arguments);
