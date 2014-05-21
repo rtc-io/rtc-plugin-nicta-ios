@@ -991,37 +991,17 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this,require("ddOWjS"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./support/isBuffer":4,"ddOWjS":3,"inherits":2}],6:[function(require,module,exports){
-// override console log
-var oldLogger = window.console.log;
-console.log = function(msg) {
-  var nativeMessage = [].slice.call(arguments).join(' ');
+// enable logging
+require('cog/logger').enable('*');
 
-  try {
-    NativeLog(nativeMessage);
-  }
-  catch (e) {
-    alert(nativeMessage);
-  }
+var media = require('rtc-media');
+var localMedia = media({
+  plugins: [
+    require('../')
+  ]
+});
 
-  oldLogger.apply(console, arguments);
-};
-
-setTimeout(function() {
-  // enable logging
-  require('cog/logger').enable('*');
-
-  var media = require('rtc-media');
-  var localMedia = media({
-    plugins: [
-      require('../')
-    ]
-  });
-
-  console.log('navigator.getUserMedia = ', typeof navigator.getUserMedia);
-  console.log('getUserMedia = ', typeof getUserMedia);
-
-  localMedia.render(document.body);
-}, 500);
+localMedia.render(document.body);
 
 },{"../":7,"cog/logger":8,"rtc-media":9}],7:[function(require,module,exports){
 /* jshint node: true */
@@ -1068,6 +1048,28 @@ exports.supported = function(platform) {
 
 **/
 var init = exports.init = function(callback) {
+  // override console log
+  var oldLogger = window.console.log;
+  console.log = function(msg) {
+    var nativeMessage = [].slice.call(arguments).join(' ');
+
+    try {
+      NativeLog(nativeMessage);
+    }
+    catch (e) {
+      alert(nativeMessage);
+    }
+
+    oldLogger.apply(console, arguments);
+  };
+
+  if (typeof getUserMedia == 'function') {
+    navigator.getUserMedia = getUserMedia;
+  }
+
+  console.log('navigator.getUserMedia = ', typeof navigator.getUserMedia);
+  console.log('getUserMedia = ', typeof getUserMedia);
+
   callback();
 };
 

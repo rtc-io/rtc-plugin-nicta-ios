@@ -42,6 +42,28 @@ exports.supported = function(platform) {
 
 **/
 var init = exports.init = function(callback) {
+  // override console log
+  var oldLogger = window.console.log;
+  console.log = function(msg) {
+    var nativeMessage = [].slice.call(arguments).join(' ');
+
+    try {
+      NativeLog(nativeMessage);
+    }
+    catch (e) {
+      alert(nativeMessage);
+    }
+
+    oldLogger.apply(console, arguments);
+  };
+
+  if (typeof getUserMedia == 'function') {
+    navigator.getUserMedia = getUserMedia;
+  }
+
+  console.log('navigator.getUserMedia = ', typeof navigator.getUserMedia);
+  console.log('getUserMedia = ', typeof getUserMedia);
+
   callback();
 };
 
