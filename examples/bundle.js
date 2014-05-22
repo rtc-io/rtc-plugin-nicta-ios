@@ -1084,16 +1084,32 @@ var init = exports.init = function(callback) {
 exports.attachStream = function(stream, bindings) {
   var contexts = [];
   var buffers = [];
+  var lastWidth = 0;
+  var lastHeight = 0;
 
   function drawVideo(imageData, width, height) {
     var img = new Image();
+    var resized = width !== lastWidth || height !== lastHeight;
+
+    console.log('captured video frame: w = ' + width + ', h = ' + height);
 
     img.src = imageData;
     img.onload = function() {
+      console.log('image loaded, drawing to attached contexts');
+
       contexts.forEach(function(context) {
+        if (resized) {
+          context.canvas.width = width;
+          context.canvas.height = height;
+        }
+
         context.drawImage(img, 0, 0, width, height);
       });
     };
+
+    // update the last width and height
+    lastWidth = width;
+    lastHeight = height;
   }
 
   // get the contexts for each of the bindings
@@ -1122,6 +1138,7 @@ exports.prepareElement = function(opts, element) {
 
   // if we should replace the element, then find the parent
   var container = shouldReplace ? element.parentNode : element;
+  console.log('preparing element, created canvas');
 
   // if we should replace the target element, then do that now
   if (shouldReplace) {
