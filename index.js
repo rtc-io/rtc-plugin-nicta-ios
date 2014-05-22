@@ -81,25 +81,41 @@ exports.attachStream = function(stream, bindings) {
   var lastWidth = 0;
   var lastHeight = 0;
 
-  function drawVideo(imageData, width, height) {
-    var img = new Image();
-    var resized = width !== lastWidth || height !== lastHeight;
+  document.addEventListener('videoFrame:' + stream.id, function(evt) {
+    var detail = evt.detail;
+
+    console.log('captured videoFrame event');
+    drawFrame(detail.imageData, detail.width, detail.height);
+  });
+
+  function drawFrame(imageData, width, height) {
+    var img;
+    var resized = false;
 
     console.log('captured video frame: w = ' + width + ', h = ' + height);
 
-    img.src = imageData;
-    img.onload = function() {
-      console.log('image loaded, drawing to attached contexts');
+    try {
+      img = new Image();
+      resized = width !== lastWidth || height !== lastHeight;
 
-      contexts.forEach(function(context) {
-        if (resized) {
-          context.canvas.width = width;
-          context.canvas.height = height;
-        }
+      img.src = imageData;
+      img.onload = function() {
+        console.log('image loaded, drawing to attached contexts');
 
-        context.drawImage(img, 0, 0, width, height);
-      });
-    };
+        contexts.forEach(function(context) {
+          if (resized) {
+            context.canvas.width = width;
+            context.canvas.height = height;
+          }
+
+          context.drawImage(img, 0, 0, width, height);
+        });
+      };
+    }
+    catch (e) {
+      console.log('encountered error while drawing video');
+      console.log('error: ' + e.message);
+    }
 
     // update the last width and height
     lastWidth = width;
@@ -111,7 +127,28 @@ exports.attachStream = function(stream, bindings) {
     return binding.el.getContext('2d');
   });
 
-  stream.ondrawvideo = drawVideo;
+  console.log('attaching stream ' + stream.id + ' to ' + bindings.length + ' bindings');
+
+  stream.ondrawvideo = function(imgData, width, height, streamId) {
+    console.log('captured draw request for streamid: ' + streamId);
+    try {
+      var evt = new CustomEvent('videoFrame:' + streamId, {
+        detail: {
+          imageData: imgData,
+          width: width,
+          height: height,
+          streamId: streamId
+        }
+      });
+
+      document.dispatchEvent(evt);
+    }
+    catch (e) {
+      console.log('error creating custom event: ' + e.message);
+    }
+  };
+
+  console.log('ondrawvideo handler = ', typeof stream.ondrawvideo);
 };
 
 /**
