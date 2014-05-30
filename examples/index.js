@@ -8,6 +8,11 @@ var plugins = [
 var qsa = require('fdom/qsa');
 var media = require('rtc-media');
 var quickconnect = require('rtc-quickconnect');
+var config = {
+  room: 'iostest',
+  plugins: plugins,
+  iceServers: require('freeice')()
+};
 
 // capture media
 media({ plugins: plugins })
@@ -15,7 +20,7 @@ media({ plugins: plugins })
     console.log('captured error: ', err);
   })
   .once('capture', function(stream) {
-    quickconnect('http://rtc.io/switchboard', { room: 'iostest', plugins: plugins })
+    quickconnect('http://rtc.io/switchboard', config)
       .addStream(stream)
       .on('call:started', function(id, pc) {
         console.log('got remote connection from peer: ' + id);
