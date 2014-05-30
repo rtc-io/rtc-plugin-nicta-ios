@@ -27,6 +27,7 @@
     "cog": "^0.5.3",
     "crel": "^1.1.2",
     "fdom": "^0.8.0",
+    "freeice": "^0.2.2",
     "rtc-media": "^1.6.3",
     "rtc-quickconnect": "^1.0.3"
   }
