@@ -32,8 +32,7 @@
 exports.supported = function(platform) {
   console.log(navigator.userAgent);
   console.log(platform.browser.toLowerCase());
-  return true;
-//   return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
+  return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
 };
 
 /**
@@ -197,7 +196,7 @@ exports.createIceCandidate = function(opts) {
   return getRTCIceCandidate(opts);
 };
 
-exports.createPeerConnection = function(config, constraints) {
+exports.createConnection = function(config, constraints) {
   return getPeerConnection(config, constraints);
 };
 
