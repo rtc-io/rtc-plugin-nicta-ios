@@ -32,7 +32,8 @@
 exports.supported = function(platform) {
   console.log(navigator.userAgent);
   console.log(platform.browser.toLowerCase());
-  return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
+  return true;
+//   return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
 };
 
 /**
@@ -42,7 +43,7 @@ exports.supported = function(platform) {
   document is prepared correctly.
 
 **/
-var init = exports.init = function(callback) {
+var init = exports.init = function(opts, callback) {
   // override console log
   var oldLogger = window.console.log;
 
@@ -167,6 +168,7 @@ exports.prepareElement = function(opts, element) {
 
   // create our canvas
   var canvas = document.createElement('canvas');
+  var srcStyle;
 
   // if we should replace the element, then find the parent
   var container = shouldReplace ? element.parentNode : element;
@@ -174,7 +176,12 @@ exports.prepareElement = function(opts, element) {
 
   // if we should replace the target element, then do that now
   if (shouldReplace) {
-    container.insertBefore(element, canvas);
+    srcStyle = window.getComputedStyle(element);
+    Object.keys(srcStyle).forEach(function(key) {
+      canvas.style[key] = srcStyle[key];
+    });
+
+    container.insertBefore(canvas, element);
     container.removeChild(element);
   }
   else {
