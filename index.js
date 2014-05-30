@@ -30,8 +30,9 @@
 
 **/
 exports.supported = function(platform) {
-  return true;
-//   return ['safari'].indexOf(platform.browser.toLowerCase()) >= 0;
+  console.log(navigator.userAgent);
+  console.log(platform.browser.toLowerCase());
+  return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
 };
 
 /**
@@ -181,4 +182,18 @@ exports.prepareElement = function(opts, element) {
   }
 
   return canvas;
+};
+
+/* peer connection plugin interfaces */
+
+exports.createIceCandidate = function(opts) {
+  return getRTCIceCandidate(opts);
+};
+
+exports.createPeerConnection = function(config, constraints) {
+  return getPeerConnection(config, constraints);
+};
+
+exports.createSessionDescription = function(opts) {
+  return getRTCSessionDescription(opts);
 };
