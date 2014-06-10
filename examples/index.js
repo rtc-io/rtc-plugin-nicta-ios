@@ -1,39 +1,43 @@
-// enable logging
-require('cog/logger').enable('*');
+var quickconnect = require('rtc-quickconnect');
+var media = require('rtc-media');
+var qsa = require('fdom/qsa');
 
 var plugins = [
   require('../')
 ];
 
-var qsa = require('fdom/qsa');
-var media = require('rtc-media');
-var quickconnect = require('rtc-quickconnect');
-var config = {
-  room: 'iostest',
-  plugins: plugins,
-  iceServers: require('freeice')()
+var opts = {
+  room: 'nictaios-conftest',
+  plugins: plugins
 };
 
-// capture media
-media({ plugins: plugins })
-  .on('error', function(err) {
-    console.log('captured error: ', err);
-  })
-  .once('capture', function(stream) {
-    quickconnect('http://rtc.io/switchboard', config)
-      .addStream(stream)
-      .on('call:started', function(id, pc) {
-        console.log('got remote connection from peer: ' + id);
-        pc.getRemoteStreams().forEach(function(remoteStream) {
-          var el = media(remoteStream).render(document.body);
-          el.dataset.peerId = id;
-        });
-      })
-      .on('call:ended', function(id) {
-        console.log('called ended with peer: ' + id);
-        qsa('*[data-peer-id="' + id + '"]').forEach(function(el) {
-          el.parentNode.removeChild(el);
-        });
+function handleStreamCap(stream) {
+  quickconnect('http://rtc.io/switchboard/', opts)
+    // broadcast our captured media to other participants in the room
+    .addStream(stream)
+    // when a peer is connected (and active) pass it to us for use
+    .on('call:started', function(id, pc, data) {
+      console.log('call started: ', pc);
+
+      // render the remote streams
+      pc.getRemoteStreams().forEach(function(stream) {
+        var el = media({ stream: stream, plugins: plugins }).render(document.body);
+
+        // set the data-peer attribute of the element
+        el.dataset.peer = id;
       });
-  })
-  .render(document.querySelector('.localVideo'));
+    })
+    // when a peer leaves, remove the media
+    .on('call:ended', function(id) {
+      // remove video elements associated with the remote peer
+      qsa('video[data-peer="' + id + '"]').forEach(function(el) {
+        el.parentNode.removeChild(el);
+      });
+    });
+}
+
+require('cog/logger').enable('*');
+
+media({ plugins: plugins })
+  .once('capture', handleStreamCap)
+  .render(document.body);
