@@ -40,4 +40,4 @@ require('cog/logger').enable('*');
 
 media({ plugins: plugins })
   .once('capture', handleStreamCap)
-  .render(document.body);
+  .render(document.querySelector('video.localVideo'));
