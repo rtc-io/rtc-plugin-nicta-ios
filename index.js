@@ -193,7 +193,12 @@ exports.prepareElement = function(opts, element) {
 /* peer connection plugin interfaces */
 
 exports.createIceCandidate = function(opts) {
-  return getRTCIceCandidate(opts);
+  console.log('creating ice candidate, keys: ' + Object.keys(opts).join(' '));
+
+  return getRTCIceCandidate({
+    sdpMLineIndex: (opts || {}).sdpMLineIndex,
+    candidate: (opts || {}).candidate
+  });
 };
 
 exports.createConnection = function(config, constraints) {
