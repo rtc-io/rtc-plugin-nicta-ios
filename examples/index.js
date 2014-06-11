@@ -8,7 +8,10 @@ var plugins = [
 
 var opts = {
   room: 'nictaios-conftest',
-  plugins: plugins
+  plugins: plugins,
+  iceServers: [
+    { url: 'stun:stun.l.google.com:19302' }
+  ]
 };
 
 function handleStreamCap(stream) {
