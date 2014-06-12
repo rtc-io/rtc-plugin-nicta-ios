@@ -1,6 +1,8 @@
 /* jshint node: true */
 'use strict';
 
+var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
+
 /**
   # rtc-plugin-nicta-ios
 
@@ -30,9 +32,8 @@
 
 **/
 exports.supported = function(platform) {
-  console.log(navigator.userAgent);
-  console.log(platform.browser.toLowerCase());
-  return ['chrome'].indexOf(platform.browser.toLowerCase()) < 0;
+  return typeof navigator != 'undefined' &&
+    reNICTAUserAgent.test(navigator.userAgent);
 };
 
 /**
