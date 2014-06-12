@@ -19,7 +19,6 @@ var localMedia = media({ plugins: plugins });
 function handleStreamCap(stream) {
   console.log('captured stream: ', stream);
 
-  // render the media
   localMedia.render(document.querySelector('video.localVideo'));
 
   // establish connectivity
