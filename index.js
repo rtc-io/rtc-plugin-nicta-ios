@@ -140,7 +140,7 @@ exports.attachStream = function(stream, bindings) {
     try {
       var evt = new CustomEvent('videoFrame:' + streamId, {
         detail: {
-          imageData: imgData,
+          imageData: imgData + '?t=' + Date.now(),
           width: width,
           height: height,
           streamId: streamId
