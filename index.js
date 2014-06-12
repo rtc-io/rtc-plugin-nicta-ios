@@ -47,8 +47,9 @@ var init = exports.init = function(opts, callback) {
   // override console log
   var oldLogger = window.console.log;
 
-  // initialise after a 10ms timeout
-  setTimeout(function() {
+  function ready(evt) {
+    document.removeEventListener('deviceready', ready);
+
     console.log = function(msg) {
       var nativeMessage = [].slice.call(arguments).join(' ');
 
@@ -70,7 +71,10 @@ var init = exports.init = function(opts, callback) {
     console.log('getUserMedia = ', typeof getUserMedia);
 
     callback();
-  }, 10);
+  }
+
+  // initialise after a 10ms timeout
+  document.addEventListener('deviceready', ready);
 };
 
 /**
