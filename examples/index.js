@@ -14,7 +14,13 @@ var opts = {
   ]
 };
 
+var localMedia = media({ plugins: plugins });
+
 function handleStreamCap(stream) {
+  // render the media
+  localMedia.render(document.querySelector('video.localVideo'));
+
+  // establish connectivity
   quickconnect('http://rtc.io/switchboard/', opts)
     // broadcast our captured media to other participants in the room
     .addStream(stream)
@@ -40,7 +46,4 @@ function handleStreamCap(stream) {
 }
 
 require('cog/logger').enable('*');
-
-media({ plugins: plugins })
-  .once('capture', handleStreamCap)
-  .render(document.querySelector('video.localVideo'));
+localMedia.once('capture', handleStreamCap);
