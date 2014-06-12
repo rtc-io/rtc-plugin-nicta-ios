@@ -173,6 +173,7 @@ exports.prepareElement = function(opts, element) {
   // create our canvas
   var canvas = document.createElement('canvas');
   var srcStyle;
+  var bounds;
 
   // if we should replace the element, then find the parent
   var container = shouldReplace ? element.parentNode : element;
@@ -180,11 +181,21 @@ exports.prepareElement = function(opts, element) {
 
   // if we should replace the target element, then do that now
   if (shouldReplace) {
+    console.log('getting computed style for the element');
     srcStyle = window.getComputedStyle(element);
-    Object.keys(srcStyle).forEach(function(key) {
-      canvas.style[key] = srcStyle[key];
-    });
 
+    console.log('getting client bounding rect');
+    bounds = element.getBoundingClientRect();
+
+    console.log('setting w and h');
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
+
+//     Object.keys(srcStyle).forEach(function(key) {
+//       canvas.style[key] = srcStyle[key];
+//     });
+
+    console.log('inserting canvas');
     container.insertBefore(canvas, element);
     container.removeChild(element);
   }
