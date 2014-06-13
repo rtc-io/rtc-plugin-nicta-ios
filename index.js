@@ -191,6 +191,9 @@ exports.prepareElement = function(opts, element) {
     canvas.width = bounds.width;
     canvas.height = bounds.height;
 
+    // add the classes from the source element to the canvas
+    canvas.className = element.className;
+
 //     Object.keys(srcStyle).forEach(function(key) {
 //       canvas.style[key] = srcStyle[key];
 //     });
