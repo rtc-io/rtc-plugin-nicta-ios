@@ -98,7 +98,7 @@ exports.attachStream = function(stream, bindings) {
     var img;
     var resized = false;
 
-    console.log('captured video frame: w = ' + width + ', h = ' + height);
+    // console.log('captured video frame: w = ' + width + ', h = ' + height);
 
     try {
       img = new Image();
@@ -106,7 +106,7 @@ exports.attachStream = function(stream, bindings) {
 
       img.src = imageData;
       img.onload = function() {
-        console.log('image loaded, drawing to attached contexts');
+        // console.log('image loaded, drawing to attached contexts');
 
         contexts.forEach(function(context) {
           if (resized) {
