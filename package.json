@@ -24,12 +24,12 @@
   },
   "homepage": "https://github.com/rtc-io/rtc-plugin-nicta-ios",
   "devDependencies": {
-    "cog": "^0.5.3",
+    "cog": "^1.0.0",
     "crel": "^1.1.2",
     "fdom": "^0.8.0",
-    "freeice": "^0.2.2",
+    "freeice": "^1.0.0",
     "rtc-media": "^1.6.3",
-    "rtc-quickconnect": "^1.0.3",
+    "rtc-quickconnect": "^2.6.0",
     "tape": "^2.13.2"
   }
 }
