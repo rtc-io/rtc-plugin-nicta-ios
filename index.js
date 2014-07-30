@@ -83,40 +83,30 @@ var init = exports.init = function(opts, callback) {
 **/
 exports.attachStream = function(stream, bindings) {
   var contexts = [];
-  var buffers = [];
   var lastWidth = 0;
   var lastHeight = 0;
 
-  document.addEventListener('videoFrame:' + stream.id, function(evt) {
-    var detail = evt.detail;
-
-    console.log('captured videoFrame event');
-    drawFrame(detail.imageData, detail.width, detail.height);
+  // get the contexts for each of the bindings
+  contexts = bindings.map(function(binding) {
+    return binding.el.getContext('2d');
   });
 
-  function drawFrame(imageData, width, height) {
-    var img;
+  iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
     var resized = false;
-
-    // console.log('captured video frame: w = ' + width + ', h = ' + height);
-
     try {
-      img = new Image();
+      var img = new Image();
       resized = width !== lastWidth || height !== lastHeight;
 
-      img.src = imageData;
       img.onload = function() {
-        // console.log('image loaded, drawing to attached contexts');
-
         contexts.forEach(function(context) {
           if (resized) {
             context.canvas.width = width;
             context.canvas.height = height;
           }
-
           context.drawImage(img, 0, 0, width, height);
         });
       };
+      img.src = imgData;
     }
     catch (e) {
       console.log('encountered error while drawing video');
@@ -126,35 +116,7 @@ exports.attachStream = function(stream, bindings) {
     // update the last width and height
     lastWidth = width;
     lastHeight = height;
-  }
-
-  // get the contexts for each of the bindings
-  contexts = bindings.map(function(binding) {
-    return binding.el.getContext('2d');
   });
-
-  console.log('attaching stream ' + stream.id + ' to ' + bindings.length + ' bindings');
-
-  stream.ondrawvideo = function(imgData, width, height, streamId) {
-    console.log('captured draw request for streamid: ' + streamId);
-    try {
-      var evt = new CustomEvent('videoFrame:' + streamId, {
-        detail: {
-          imageData: imgData + '?t=' + Date.now(),
-          width: width,
-          height: height,
-          streamId: streamId
-        }
-      });
-
-      document.dispatchEvent(evt);
-    }
-    catch (e) {
-      console.log('error creating custom event: ' + e.message);
-    }
-  };
-
-  console.log('ondrawvideo handler = ', typeof stream.ondrawvideo);
 };
 
 /**
