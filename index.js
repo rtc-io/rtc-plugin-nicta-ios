@@ -2,6 +2,7 @@
 'use strict';
 
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
+var deviceReady = false;
 
 /**
   # rtc-plugin-nicta-ios
@@ -73,7 +74,13 @@ var init = exports.init = function(opts, callback) {
     callback();
   }
 
-  // initialise after a 10ms timeout
+  // if the device is ready, then initialise immediately
+  if (deviceReady) {
+    // initialise after a 10ms timeout
+    return setTimeout(ready, 10);
+  }
+
+  // wait for the device ready call
   document.addEventListener('deviceready', ready);
 };
 
@@ -196,3 +203,10 @@ exports.createConnection = function(config, constraints) {
 exports.createSessionDescription = function(opts) {
   return getRTCSessionDescription(opts);
 };
+
+// listen for deviceready in case it happens before the plugin is called
+if (typeof document != 'undefined') {
+  document.addEventListener('deviceready', function() {
+    deviceReady = true;
+  });
+}
