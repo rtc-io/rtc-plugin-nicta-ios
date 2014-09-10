@@ -1,6 +1,8 @@
 /* jshint node: true */
 'use strict';
 
+var ProxyMediaStream = require('rtc-proxy/mediastream');
+var ProxyPeerConnection = require('rtc-proxy/peerconnection');
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
 var deviceReady = false;
 
@@ -65,7 +67,11 @@ var init = exports.init = function(opts, callback) {
     };
 
     if (typeof getUserMedia == 'function') {
-      navigator.getUserMedia = getUserMedia;
+      navigator.getUserMedia = function(constraints, successCb, failureCb) {
+        getUserMedia(constraints, function(stream) {
+          successCb(new ProxyMediaStream(stream));
+        }, failureCb);
+      };
     }
 
     console.log('navigator.getUserMedia = ', typeof navigator.getUserMedia);
@@ -197,7 +203,7 @@ exports.createConnection = function(config, constraints) {
     return { url: url };
   });
 
-  return getPeerConnection(config, constraints);
+  return new ProxyPeerConnection(getPeerConnection(config, constraints));
 };
 
 exports.createSessionDescription = function(opts) {

@@ -31,5 +31,8 @@
     "rtc-media": "^1.6.3",
     "rtc-quickconnect": "^2.6.0",
     "tape": "^2.13.2"
+  },
+  "dependencies": {
+    "rtc-proxy": "^1.0.0"
   }
 }
