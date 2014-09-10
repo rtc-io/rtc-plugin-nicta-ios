@@ -104,6 +104,11 @@ exports.attachStream = function(stream, bindings) {
     return binding.el.getContext('2d');
   });
 
+  // if we are a proxyied stream, get the original stream
+  if (stream && stream.__orig) {
+    stream = stream.__orig;
+  }
+
   iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
     var resized = false;
     try {
