@@ -108,6 +108,7 @@ exports.attach = function(stream, opts) {
 
   iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
     var resized = false;
+
     try {
       var img = new Image();
       resized = width !== lastWidth || height !== lastHeight;
@@ -130,6 +131,8 @@ exports.attach = function(stream, opts) {
     lastWidth = width;
     lastHeight = height;
   });
+
+  return canvas;
 };
 
 /**
