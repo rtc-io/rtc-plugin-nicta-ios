@@ -221,15 +221,12 @@ var prepareElement = exports.prepareElement = function(opts, element) {
     // add the classes from the source element to the canvas
     canvas.className = element.className;
 
-//     Object.keys(srcStyle).forEach(function(key) {
-//       canvas.style[key] = srcStyle[key];
-//     });
-
     console.log('inserting canvas');
     container.insertBefore(canvas, element);
     container.removeChild(element);
   }
-  else {
+  // if we have an existing DOM node, then append to the container
+  else if (container) {
     container.appendChild(canvas);
   }
 
