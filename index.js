@@ -58,7 +58,7 @@ var init = exports.init = function(opts, callback) {
 
     // override the console.log implementation to report back to the iOS console
     oldLogger = window.console.log;
-    console.log = function(msg) {
+    window.console.log = function(msg) {
       var nativeMessage = [].slice.call(arguments).join(' ');
 
       try {
@@ -68,7 +68,7 @@ var init = exports.init = function(opts, callback) {
         alert(nativeMessage);
       }
 
-      oldLogger.apply(console, arguments);
+      oldLogger.apply(window.console, arguments);
     };
 
     if (typeof getUserMedia == 'function') {
