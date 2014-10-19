@@ -8,7 +8,7 @@ currently under development.
 
 [![NPM](https://nodei.co/npm/rtc-plugin-nicta-ios.png)](https://nodei.co/npm/rtc-plugin-nicta-ios/)
 
-[![experimental](https://img.shields.io/badge/stability-experimental-red.svg)](https://github.com/badges/stability-badges) [![Dependency Status](https://david-dm.org/rtc-io/rtc-plugin-nicta-ios.svg)](https://david-dm.org/rtc-io/rtc-plugin-nicta-ios) 
+[![unstable](https://img.shields.io/badge/stability-unstable-yellowgreen.svg)](https://github.com/dominictarr/stability#unstable) 
 
 ## Getting More Information
 

@@ -3,6 +3,7 @@
   "version": "1.3.4",
   "description": "An iOS integration plugin for getting WebRTC working on an iOS device using webkit",
   "main": "index.js",
+  "stability": "unstable",
   "scripts": {
     "browserify": "mkdir -p dist && browserify index.js -s RTC.IOS --debug | exorcist dist/rtc-ios.js.map > dist/rtc-ios.js",
     "uglify": "uglifyjs --screw-ie8 --mangle --compress --in-source-map dist/rtc-ios.js.map --source-map-include-sources --source-map dist/rtc-ios.min.js.map --source-map-url rtc.min.js.map --output dist/rtc-ios.min.js dist/rtc-ios.js",

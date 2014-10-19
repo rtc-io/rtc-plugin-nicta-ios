@@ -1,8 +1,7 @@
 {
   "badges": {
     "nodeico": true,
-    "stability": "experimental",
-    "david": true
+    "stability": true
   },
 
   "license": {
