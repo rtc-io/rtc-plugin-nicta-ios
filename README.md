@@ -1,9 +1,8 @@
 # rtc-plugin-nicta-ios
 
-This is an experimental plugin for bridging the functionality provided
+This is a plugin for bridging the functionality provided by
 an in-progress NICTA iOS webkit plugin.  While this plugin integration
-layer is provided opensource the iOS plugin is a commercial project
-currently under development.
+layer is provided opensource, the iOS plugin itself is part of http://build.rtc.io/.
 
 
 [![NPM](https://nodei.co/npm/rtc-plugin-nicta-ios.png)](https://nodei.co/npm/rtc-plugin-nicta-ios/)
