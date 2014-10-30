@@ -10,8 +10,8 @@ function drawFrames(stream, callback) {
   var image;
   var data;
 
-  canvas.width = 1024;
-  canvas.height = 768;
+  canvas.width = 200;
+  canvas.height = 80;
   image = ctx.createImageData(canvas.width, canvas.height);
   data = image.data;
 
