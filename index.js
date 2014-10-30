@@ -1,6 +1,7 @@
 /* jshint node: true */
 'use strict';
 
+var objectfit = require('objectfit');
 var ProxyMediaStream = require('rtc-proxy/mediastream');
 var ProxyPeerConnection = require('rtc-proxy/peerconnection');
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
@@ -98,39 +99,54 @@ var init = exports.init = function(opts, callback) {
 exports.attach = function(stream, opts) {
   var canvas = prepareElement(opts, (opts || {}).el);
   var context = canvas.getContext('2d');
-  var lastWidth = 0;
-  var lastHeight = 0;
+  var fitter;
+  var img;
+
+  function handleWindowResize(evt) {
+    var bounds = canvas.getBoundingClientRect();
+    var style = window.getComputedStyle(canvas);
+    var fit = objectfit[style.objectFit] || objectfit.contain;
+
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
+
+    // get the fitter function
+    fitter = fit([0, 0, bounds.width, bounds.height]);
+    drawImage();
+  }
+
+  function drawImage() {
+    if (! img) {
+      return;
+    }
+
+    context.drawImage.apply(context, [img].concat(fitter([0, 0, img.width, img.height])));
+  }
 
   // if we are a proxyied stream, get the original stream
   if (stream && stream.__orig) {
     stream = stream.__orig;
   }
 
+  // handle window resizes and resize the canvas appropriately
+  window.addEventListener('resize', handleWindowResize, false);
+
   iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
-    var resized = false;
+    var bounds;
 
     try {
-      var img = new Image();
-      resized = width !== lastWidth || height !== lastHeight;
-
-      img.onload = function() {
-        if (resized) {
-          context.canvas.width = width;
-          context.canvas.height = height;
-        }
-        context.drawImage(img, 0, 0, width, height);
-      };
+      img = new Image();
+      img.onload = drawImage;
       img.src = imgData;
     }
     catch (e) {
       console.log('encountered error while drawing video');
       console.log('error: ' + e.message);
     }
-
-    // update the last width and height
-    lastWidth = width;
-    lastHeight = height;
   });
+
+  // handle the initial window resize
+  handleWindowResize();
 
   return canvas;
 };
