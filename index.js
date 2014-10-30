@@ -130,23 +130,16 @@ exports.attach = function(stream, opts) {
 
   // handle window resizes and resize the canvas appropriately
   window.addEventListener('resize', handleWindowResize, false);
+  window.addEventListener('load', handleWindowResize, false);
 
   iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
-    var bounds;
-
-    try {
-      img = new Image();
-      img.onload = drawImage;
-      img.src = imgData;
-    }
-    catch (e) {
-      console.log('encountered error while drawing video');
-      console.log('error: ' + e.message);
-    }
+    img = new Image();
+    img.onload = drawImage;
+    img.src = imgData;
   });
 
   // handle the initial window resize
-  handleWindowResize();
+  setTimeout(handleWindowResize, 10);
 
   return canvas;
 };
