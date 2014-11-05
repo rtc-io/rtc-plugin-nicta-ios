@@ -10,6 +10,7 @@ $(REQUIRED_TOOLS):
 dist:
 	@echo "building"
 	@mkdir -p dist
+	@browserify src/simulator.js > dist/simulator.js $(BROWSERIFY_FLAGS)
 	@browserify src/content.js > dist/content.js $(BROWSERIFY_FLAGS)
 	@browserify src/index.js > dist/index.js $(BROWSERIFY_FLAGS)
 	@cat src/manifest.json > dist/manifest.json

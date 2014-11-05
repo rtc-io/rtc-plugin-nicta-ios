@@ -26,7 +26,9 @@
     "default_title": "Set this page's color.",
     "default_icon": "icon48.png"
   },
-
+  "web_accessible_resources": [
+    "simulator.js"
+  ],
   "content_scripts": [{
     "matches": ["http://*/*", "https://*/*"],
     "js": ["content.js"],
