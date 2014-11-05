@@ -10,6 +10,8 @@ function drawFrames(stream, callback) {
   var image;
   var data;
 
+  console.log(stream);
+
   canvas.width = 200;
   canvas.height = 80;
   image = ctx.createImageData(canvas.width, canvas.height);
@@ -51,6 +53,10 @@ function drawFrames(stream, callback) {
   raf(drawFrame);
 }
 
+function getPeerConnection(config, constraints) {
+  return new webkitRTCPeerConnection(config, constraints);
+}
+
 Object.defineProperty(navigator, 'userAgent', {
   get: function() {
     return 'foobar browser (iOS; mocked Mobile/NICTA)';
@@ -61,6 +67,15 @@ Object.defineProperty(navigator, 'userAgent', {
 window.getUserMedia = require('rtc-core/detect')('getUserMedia');
 window.NativeLog = function() {};
 window.iOSRTC_onDrawRegi = drawFrames;
+window.getPeerConnection = getPeerConnection;
+
+window.getRTCSessionDescription = function(opts) {
+  return new RTCSessionDescription(opts);
+};
+
+window.getRTCIceCandidate = function(data) {
+  return new RTCIceCandidate(data);
+};
 
 setTimeout(function() {
   document.dispatchEvent(new Event('deviceready'));
