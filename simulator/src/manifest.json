@@ -23,7 +23,7 @@
     "https://*/*"
   ],
   "browser_action": {
-    "default_title": "Set this page's color.",
+    "default_title": "Activate the build.rtc.io iOS simulator",
     "default_icon": "icon48.png"
   },
   "web_accessible_resources": [
