@@ -21,16 +21,6 @@ function handleRequest(request, sender, sendResponse) {
   }
 }
 
-window.addEventListener('load', function() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    if (chrome.runtime.lastError) {
-      return console.error(chrome.runtime.lastError);
-    }
-
-    checkState(tabs[0]);
-  });
-});
-
 chrome.browserAction.onClicked.addListener(function(tab) {
   var key = 'simulator:' + tab.id;
 

@@ -20,6 +20,7 @@
     "attachmediastream": "^1.0.1",
     "canplay": "^1.0.1",
     "crel": "^2.1.5",
+    "cuid": "^1.2.4",
     "fdom": "^1.2.0",
     "perlin": "^1.0.0"
   }
