@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/rtc-io/plugin-nicta-ios",
   "devDependencies": {
+    "attachmediastream": "^1.0.1",
+    "canplay": "^1.0.1",
     "crel": "^2.1.5",
     "fdom": "^1.2.0",
     "perlin": "^1.0.0"

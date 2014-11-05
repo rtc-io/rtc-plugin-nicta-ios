@@ -1,56 +1,32 @@
 var crel = require('crel');
 var raf = require('fdom/raf');
-var noise = require('perlin').noise;
+var attach = require('attachmediastream');
+var canplay = require('canplay');
 
 function drawFrames(stream, callback) {
-  var fn = 'simplex';
-  var height = 0;
   var canvas = crel('canvas');
   var ctx = canvas.getContext('2d');
   var image;
   var data;
-
-  console.log(stream);
-
-  canvas.width = 200;
-  canvas.height = 80;
-  image = ctx.createImageData(canvas.width, canvas.height);
-  data = image.data;
+  var video = attach(stream);
 
   function drawFrame() {
-    // Cache width and height values for the canvas.
-    var cWidth = canvas.width;
-    var cHeight = canvas.height;
-    var max = -Infinity, min = Infinity;
-    var noisefn = fn === 'simplex' ? noise.simplex3 : noise.perlin3;
+    ctx.drawImage(video, 0, 0);
+    callback(canvas.toDataURL('image/png'), canvas.width, canvas.height);
 
-    for (var x = 0; x < cWidth; x++) {
-      for (var y = 0; y < cHeight; y++) {
-        var value = noisefn(x / 50, y / 50, height);
-
-        if (max < value) max = value;
-        if (min > value) min = value;
-
-        value = (1 + value) * 1.1 * 128;
-
-        var cell = (x + y * cWidth) * 4;
-        data[cell] = data[cell + 1] = data[cell + 2] = value;
-        //data[cell] += Math.max(0, (25 - value) * 8);
-        data[cell + 3] = 255; // alpha.
-      }
-    }
-
-    ctx.fillColor = 'black';
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.putImageData(image, 0, 0);
-
-    height += 0.05;
-
-    callback(canvas.toDataURL('image/png'), cWidth, cHeight);
     raf(drawFrame);
   }
 
-  raf(drawFrame);
+  canplay(video, function(err) {
+    if (err) {
+      return console.error('cannot play video stream');
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    raf(drawFrame);
+  });
 }
 
 function getPeerConnection(config, constraints) {
