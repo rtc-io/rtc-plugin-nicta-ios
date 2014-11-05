@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+  "name": "rtc.io iOS plugin simulator",
+  "version": "1.0",
+
+  "description": "Make it possible to debug the build.rtc.io iOS plugin while developing in chrome",
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+
+  "author": "rtc.io",
+  "short_name": "rtc.io ios plugin sim",
+  "background": {
+    "scripts": ["index.js"],
+    "persistent": false
+  },
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "browser_action": {
+    "default_title": "Set this page's color.",
+    "default_icon": "icon48.png"
+  },
+
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content.js"],
+    "run_at": "document_start"
+  }],
+
+  "minimum_chrome_version": "34"
+}

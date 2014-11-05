@@ -1,0 +1,24 @@
+{
+  "name": "simulator-nicta-ios-plugin",
+  "version": "1.0.0",
+  "description": "A browser extension that can be used to simulate the NICTA iOS plugin without having to roundtrip on build.rtc.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rtc-io/plugin-nicta-ios.git"
+  },
+  "author": "Damon Oehlman <damon.oehlman@nicta.com.au>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/rtc-io/plugin-nicta-ios/issues"
+  },
+  "homepage": "https://github.com/rtc-io/plugin-nicta-ios",
+  "devDependencies": {
+    "crel": "^2.1.5",
+    "fdom": "^1.2.0",
+    "perlin": "^1.0.0"
+  }
+}

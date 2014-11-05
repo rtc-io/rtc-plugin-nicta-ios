@@ -1,10 +1,14 @@
 var quickconnect = require('rtc-quickconnect');
 var media = require('rtc-media');
 var qsa = require('fdom/qsa');
+var plugin = require('rtc-core/plugin');
 
 var plugins = [
   require('../')
 ];
+
+console.log(navigator.userAgent);
+console.log(plugin(plugins));
 
 var opts = {
   room: 'nictaios-conftest',

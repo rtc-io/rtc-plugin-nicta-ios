@@ -12,10 +12,9 @@ var initialized = false;
 /**
   # rtc-plugin-nicta-ios
 
-  This is an experimental plugin for bridging the functionality provided
-  an in-progress NICTA iOS webkit plugin.  While this plugin integration
-  layer is provided opensource the iOS plugin is a commercial project
-  currently under development.
+  This is a plugin for bridging the functionality provided by a NICTA iOS webkit plugin.
+  While this plugin integration layer is provided opensource, the iOS plugin itself is
+  part of http://build.rtc.io/.
 
   ## Getting More Information
 
