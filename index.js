@@ -81,6 +81,9 @@ var init = exports.init = function(opts, callback) {
     callback();
   }
 
+  // check if we missed the device ready
+  deviceReady = deviceReady || typeof getPeerConnection != 'undefined';
+
   // if the device is ready, then initialise immediately
   if (deviceReady) {
     // initialise after a 10ms timeout
