@@ -20,5 +20,5 @@ clean:
 	@rm -rf dist
 
 zip: rebuild
-	@rm bundle.zip
+	@rm -f bundle.zip
 	@zip -r bundle.zip dist/*
