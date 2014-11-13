@@ -2,8 +2,6 @@
 'use strict';
 
 var objectfit = require('objectfit');
-var ProxyMediaStream = require('rtc-proxy/mediastream');
-var ProxyPeerConnection = require('rtc-proxy/peerconnection');
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
 var deviceReady = false;
 var initialized = false;
@@ -73,9 +71,7 @@ var init = exports.init = function(opts, callback) {
 
     if (typeof getUserMedia == 'function') {
       navigator.getUserMedia = function(constraints, successCb, failureCb) {
-        getUserMedia(constraints, function(stream) {
-          successCb(new ProxyMediaStream(stream));
-        }, failureCb);
+        getUserMedia(constraints, successCb, failureCb);
       };
     }
 
@@ -258,7 +254,7 @@ exports.createConnection = function(config, constraints) {
     return { url: url };
   });
 
-  return new ProxyPeerConnection(getPeerConnection(config, constraints));
+  return getPeerConnection(config, constraints);
 };
 
 exports.createSessionDescription = function(opts) {

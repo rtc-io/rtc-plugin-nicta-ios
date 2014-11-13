@@ -46,7 +46,6 @@
     "uglify-js": "^2.4.15"
   },
   "dependencies": {
-    "objectfit": "^1.2.0",
-    "rtc-proxy": "^1.1.0"
+    "objectfit": "^1.2.0"
   }
 }
