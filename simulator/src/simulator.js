@@ -12,7 +12,7 @@ function drawFrames(stream, callback) {
   var ctx = canvas.getContext('2d');
   var image;
   var data;
-  var video = attach(stream._real || stream);
+  var video = attach(stream._real || stream, null, { muted: stream.muted });
 
   function drawFrame() {
     ctx.drawImage(video, 0, 0);
@@ -54,7 +54,7 @@ Object.defineProperty(navigator, 'userAgent', {
 window.getUserMedia = function(constraints, successCallback, failureCallback) {
   getUserMedia.call(navigator, constraints, function(stream) {
     // create a new uuid for the stream
-    successCallback(new FakeStream(stream));
+    successCallback(new FakeStream(stream, { muted: true }));
   }, failureCallback);
 };
 window.NativeLog = function() {};

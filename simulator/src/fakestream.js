@@ -1,9 +1,10 @@
-function FakeStream(real) {
+function FakeStream(real, opts) {
   if (! (this instanceof FakeStream)) {
-    return new FakeStream(real);
+    return new FakeStream(real, opts);
   }
 
   this._real = real;
+  this.muted = (opts || {}).muted;
 }
 
 module.exports = FakeStream;
