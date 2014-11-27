@@ -250,13 +250,6 @@ exports.createIceCandidate = function(opts) {
 };
 
 exports.createConnection = function(config, constraints) {
-  config.iceServers = (config.iceServers || []).map(function(details) {
-    var url = (details || {}).url;
-    console.log('specifying ice url: ' + url);
-
-    return { url: url };
-  });
-
   return getPeerConnection(config, constraints);
 };
 
