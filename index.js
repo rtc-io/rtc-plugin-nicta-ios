@@ -95,7 +95,7 @@ var init = exports.init = function(opts, callback) {
 };
 
 exports.attach = function(stream, opts) {
-  var canvas = prepareElement(opts, (opts || {}).el);
+  var canvas = prepareElement(opts, (opts || {}).el || (opts || {}).target);
   var context = canvas.getContext('2d');
   var fitter;
   var img;
