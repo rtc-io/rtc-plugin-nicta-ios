@@ -165,7 +165,7 @@ var prepareElement = exports.prepareElement = function(opts, element) {
   console.log('preparing element, created canvas');
 
   // if we should replace the target element, then do that now
-  if (shouldReplace) {
+  if (shouldReplace && element.parentNode) {
     console.log('getting computed style for the element');
     srcStyle = window.getComputedStyle(element);
 
