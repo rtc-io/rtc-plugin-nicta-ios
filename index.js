@@ -2,6 +2,7 @@
 'use strict';
 
 var objectfit = require('objectfit');
+var raf = require('fdom/raf');
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
 var deviceReady = false;
 var initialized = false;
@@ -97,8 +98,24 @@ var init = exports.init = function(opts, callback) {
 exports.attach = function(stream, opts) {
   var canvas = prepareElement(opts, (opts || {}).el || (opts || {}).target);
   var context = canvas.getContext('2d');
+  var maxfps = parseInt((opts || {}).maxfps, 10) || 0;
+  var drawInterval = maxfps && (1000 / maxfps);
+  var lastDraw = 0;
   var fitter;
   var img;
+
+  function handleImageData(imgData, width, height) {
+    var tick = Date.now();
+    if (drawInterval && (tick < lastDraw + drawInterval)) {
+      return;
+    }
+
+    img = new Image();
+    img.onload = function() {
+      raf(drawImage);
+    };
+    img.src = imgData;
+  }
 
   function handleWindowResize(evt) {
     var bounds = canvas.getBoundingClientRect();
@@ -119,17 +136,14 @@ exports.attach = function(stream, opts) {
     }
 
     context.drawImage.apply(context, [img].concat(fitter([0, 0, img.width, img.height])));
+    lastDraw = Date.now();
   }
 
   // handle window resizes and resize the canvas appropriately
   window.addEventListener('resize', handleWindowResize, false);
   window.addEventListener('load', handleWindowResize, false);
 
-  iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
-    img = new Image();
-    img.onload = drawImage;
-    img.src = imgData;
-  });
+  iOSRTC_onDrawRegi(stream, handleImageData);
 
   // handle the initial window resize
   setTimeout(handleWindowResize, 10);
