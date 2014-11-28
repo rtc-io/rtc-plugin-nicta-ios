@@ -143,53 +143,6 @@ exports.attach = function(stream, opts) {
 };
 
 /**
-  ### attachStream(stream, bindings)
-
-**/
-exports.attachStream = function(stream, bindings) {
-  var contexts = [];
-  var lastWidth = 0;
-  var lastHeight = 0;
-
-  // get the contexts for each of the bindings
-  contexts = bindings.map(function(binding) {
-    return binding.el.getContext('2d');
-  });
-
-  // if we are a proxyied stream, get the original stream
-  if (stream && stream.__orig) {
-    stream = stream.__orig;
-  }
-
-  iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
-    var resized = false;
-    try {
-      var img = new Image();
-      resized = width !== lastWidth || height !== lastHeight;
-
-      img.onload = function() {
-        contexts.forEach(function(context) {
-          if (resized) {
-            context.canvas.width = width;
-            context.canvas.height = height;
-          }
-          context.drawImage(img, 0, 0, width, height);
-        });
-      };
-      img.src = imgData;
-    }
-    catch (e) {
-      console.log('encountered error while drawing video');
-      console.log('error: ' + e.message);
-    }
-
-    // update the last width and height
-    lastWidth = width;
-    lastHeight = height;
-  });
-};
-
-/**
   ### prepareElement(opts, element) => HTMLElement
 
   The `prepareElement` function is used to prepare the video container
