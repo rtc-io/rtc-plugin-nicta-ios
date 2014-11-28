@@ -166,16 +166,6 @@ var prepareElement = exports.prepareElement = function(opts, element) {
 
   // if we should replace the target element, then do that now
   if (shouldReplace && element.parentNode) {
-    console.log('getting computed style for the element');
-    srcStyle = window.getComputedStyle(element);
-
-    console.log('getting client bounding rect');
-    bounds = element.getBoundingClientRect();
-
-    console.log('setting w and h');
-    canvas.width = bounds.width;
-    canvas.height = bounds.height;
-
     // add the classes from the source element to the canvas
     canvas.className = element.className;
 
