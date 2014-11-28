@@ -121,11 +121,6 @@ exports.attach = function(stream, opts) {
     context.drawImage.apply(context, [img].concat(fitter([0, 0, img.width, img.height])));
   }
 
-  // if we are a proxyied stream, get the original stream
-  if (stream && stream.__orig) {
-    stream = stream.__orig;
-  }
-
   // handle window resizes and resize the canvas appropriately
   window.addEventListener('resize', handleWindowResize, false);
   window.addEventListener('load', handleWindowResize, false);
