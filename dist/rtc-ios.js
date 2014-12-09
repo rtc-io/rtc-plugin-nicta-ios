@@ -3,6 +3,7 @@
 'use strict';
 
 var objectfit = require('objectfit');
+var raf = require('fdom/raf');
 var reNICTAUserAgent = /\(iOS\;.*Mobile\/NICTA/;
 var deviceReady = false;
 var initialized = false;
@@ -98,8 +99,24 @@ var init = exports.init = function(opts, callback) {
 exports.attach = function(stream, opts) {
   var canvas = prepareElement(opts, (opts || {}).el || (opts || {}).target);
   var context = canvas.getContext('2d');
+  var maxfps = parseInt((opts || {}).maxfps, 10) || 0;
+  var drawInterval = maxfps && (1000 / maxfps);
+  var lastDraw = 0;
   var fitter;
   var img;
+
+  function handleImageData(imgData, width, height) {
+    var tick = Date.now();
+    if (drawInterval && (tick < lastDraw + drawInterval)) {
+      return;
+    }
+
+    img = new Image();
+    img.onload = function() {
+      raf(drawImage);
+    };
+    img.src = imgData;
+  }
 
   function handleWindowResize(evt) {
     var bounds = canvas.getBoundingClientRect();
@@ -120,22 +137,14 @@ exports.attach = function(stream, opts) {
     }
 
     context.drawImage.apply(context, [img].concat(fitter([0, 0, img.width, img.height])));
-  }
-
-  // if we are a proxyied stream, get the original stream
-  if (stream && stream.__orig) {
-    stream = stream.__orig;
+    lastDraw = Date.now();
   }
 
   // handle window resizes and resize the canvas appropriately
   window.addEventListener('resize', handleWindowResize, false);
   window.addEventListener('load', handleWindowResize, false);
 
-  iOSRTC_onDrawRegi(stream, function(imgData, width, height) {
-    img = new Image();
-    img.onload = drawImage;
-    img.src = imgData;
-  });
+  iOSRTC_onDrawRegi(stream, handleImageData);
 
   // handle the initial window resize
   setTimeout(handleWindowResize, 10);
@@ -208,7 +217,31 @@ if (typeof document != 'undefined') {
   });
 }
 
-},{"objectfit":4}],2:[function(require,module,exports){
+},{"fdom/raf":2,"objectfit":5}],2:[function(require,module,exports){
+/* jshint node: true */
+/* global window: false */
+'use strict';
+
+var TEST_PROPS = ['r', 'webkitR', 'mozR', 'oR', 'msR'];
+
+/**
+  ### raf(callback)
+
+  Request animation frame helper.
+
+  <<< examples/raf.js
+
+**/
+
+module.exports = typeof window != 'undefined' && (function() {
+  for (var ii = 0; ii < TEST_PROPS.length; ii++) {
+    window.animFrame = window.animFrame ||
+      window[TEST_PROPS[ii] + 'equestAnimationFrame'];
+  } // for
+
+  return animFrame;
+})();
+},{}],3:[function(require,module,exports){
 /**
   ### contain
 
@@ -252,7 +285,7 @@ module.exports = function(container, subject) {
   return subject ? contain(subject) : contain;
 };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
   ### cover
 
@@ -294,7 +327,7 @@ module.exports = function(container, subject) {
   return subject ? fit(subject) : fit;
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
   # objectfit
 
@@ -325,7 +358,7 @@ module.exports = function(container, subject) {
 exports.contain = require('./contain');
 exports.cover = require('./cover');
 
-},{"./contain":2,"./cover":3}]},{},[1])(1)
+},{"./contain":3,"./cover":4}]},{},[1])(1)
 });
 
 
