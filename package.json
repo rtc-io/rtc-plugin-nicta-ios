@@ -1,6 +1,6 @@
 {
   "name": "rtc-plugin-nicta-ios",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "An iOS integration plugin for getting WebRTC working on an iOS device using webkit",
   "main": "index.js",
   "stability": "unstable",
