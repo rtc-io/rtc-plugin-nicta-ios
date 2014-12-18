@@ -10,6 +10,7 @@
     "build": "npm run browserify && npm run uglify",
     "prepublish": "npm dedupe && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "beefy examples/simple.js:bundle.js --cwd ./examples/",
     "gendocs": "gendocs > README.md"
   },
   "repository": {
