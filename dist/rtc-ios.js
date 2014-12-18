@@ -125,6 +125,7 @@ exports.attach = function(stream, opts) {
 
     canvas.width = bounds.width;
     canvas.height = bounds.height;
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     // get the fitter function
     fitter = fit([0, 0, bounds.width, bounds.height]);
