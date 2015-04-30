@@ -7,7 +7,7 @@ require('rtc-media')({
   target: video,
   maxfps: 10,
   plugins: [
-    require('rtc-plugin-nicta-ios')
+    require('..')
   ]
 });
 
